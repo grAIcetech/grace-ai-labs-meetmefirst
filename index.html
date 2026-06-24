@@ -1,0 +1,1572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>grAIce Labs — MeetMeFirst | AI-Native Exploration</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     DESIGN TOKENS — grAIce Design System
+     ============================================================ */
+  :root {
+    --bg-primary:    #0f0f14;
+    --bg-secondary:  #16161e;
+    --bg-tertiary:   #1c1c27;
+    --bg-card:       rgba(139, 92, 246, 0.08);
+    --bg-card-hover: rgba(139, 92, 246, 0.14);
+    --border-subtle: rgba(139, 92, 246, 0.15);
+    --border-medium: rgba(139, 92, 246, 0.25);
+
+    --violet:  #8b5cf6;
+    --blue:    #3b82f6;
+    --green:   #22c55e;
+    --amber:   #f59e0b;
+    --red:     #ef4444;
+    --cyan:    #06b6d4;
+
+    --text-primary:   #e8e6f0;
+    --text-secondary: #9a96ab;
+    --text-muted:     #5e5a6e;
+
+    --gradient: linear-gradient(135deg, var(--violet), var(--blue), var(--green));
+    --gradient-h: linear-gradient(90deg, var(--violet), var(--blue), var(--green));
+
+    --font-sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-mono: 'IBM Plex Mono', 'Fira Code', monospace;
+
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 16px;
+
+    --sidebar-w: 240px;
+    --panel-w:   340px;
+  }
+
+  /* ============================================================
+     RESET & BASE
+     ============================================================ */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { font-size: 14px; }
+
+  body {
+    font-family: var(--font-sans);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ============================================================
+     LAYOUT: Header + 3-column body
+     ============================================================ */
+  .app {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
+
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    height: 52px;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-subtle);
+    flex-shrink: 0;
+    z-index: 10;
+  }
+
+  .header-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .header-brand .logo-icon {
+    width: 28px; height: 28px;
+    background: var(--gradient);
+    border-radius: 7px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 13px; color: #fff;
+  }
+
+  .header-brand h1 {
+    font-size: 15px; font-weight: 600;
+    background: var(--gradient-h);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.3px;
+  }
+
+  .header-brand h1 span {
+    -webkit-text-fill-color: var(--text-secondary);
+    font-weight: 400;
+  }
+
+  .header-meta {
+    display: flex; align-items: center; gap: 16px;
+    font-size: 12px; color: var(--text-secondary);
+    font-family: var(--font-mono);
+  }
+
+  .header-meta .status-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--green);
+    display: inline-block;
+    margin-right: 4px;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: .4; }
+  }
+
+  .body {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  /* ============================================================
+     LEFT SIDEBAR
+     ============================================================ */
+  .sidebar {
+    width: var(--sidebar-w);
+    background: var(--bg-secondary);
+    border-right: 1px solid var(--border-subtle);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    overflow-y: auto;
+  }
+
+  .sidebar-section {
+    padding: 16px;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .sidebar-section:last-child { border-bottom: none; }
+
+  .sidebar-label {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+  }
+
+  .version-selector {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    padding: 8px 12px;
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    width: 100%;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%239a96ab' viewBox='0 0 16 16'%3E%3Cpath d='M4.5 6l3.5 4 3.5-4z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+  }
+
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 12px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all .15s;
+    margin-bottom: 2px;
+  }
+
+  .nav-item:hover { background: var(--bg-card); color: var(--text-primary); }
+  .nav-item.active {
+    background: var(--bg-card-hover);
+    color: var(--text-primary);
+    border-left: 2px solid var(--violet);
+    padding-left: 10px;
+  }
+
+  .nav-icon {
+    width: 18px; height: 18px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; opacity: .7;
+  }
+
+  /* Skillchain mini-nav */
+  .skillchain-nav {
+    display: flex; flex-direction: column; gap: 0;
+  }
+
+  .skill-nav-item {
+    display: flex; align-items: flex-start; gap: 8px;
+    padding: 6px 8px 6px 16px;
+    font-size: 11px;
+    color: var(--text-muted);
+    position: relative;
+    cursor: pointer;
+    transition: color .15s;
+  }
+
+  .skill-nav-item:hover { color: var(--text-secondary); }
+
+  .skill-nav-item::before {
+    content: '';
+    position: absolute;
+    left: 6px; top: 0; bottom: 0;
+    width: 1px;
+    background: var(--border-subtle);
+  }
+
+  .skill-nav-item:first-child::before { top: 50%; }
+  .skill-nav-item:last-child::before  { bottom: 50%; }
+
+  .skill-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border-medium);
+    flex-shrink: 0;
+    margin-top: 2px;
+    position: relative;
+    z-index: 1;
+    background: var(--bg-secondary);
+  }
+
+  .skill-dot.done { background: var(--green); border-color: var(--green); }
+  .skill-dot.active { background: var(--violet); border-color: var(--violet); }
+
+  /* ============================================================
+     CENTER CONTENT
+     ============================================================ */
+  .center {
+    flex: 1;
+    overflow-y: auto;
+    padding: 28px 32px;
+    scroll-behavior: smooth;
+  }
+
+  /* Tab bar inside center */
+  .tab-bar {
+    display: flex; gap: 0;
+    border-bottom: 1px solid var(--border-subtle);
+    margin-bottom: 28px;
+  }
+
+  .tab {
+    padding: 10px 20px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all .15s;
+  }
+
+  .tab:hover { color: var(--text-secondary); }
+  .tab.active { color: var(--text-primary); border-bottom-color: var(--violet); }
+
+  /* Tab panes */
+  .tab-pane { display: none; }
+  .tab-pane.active { display: block; }
+
+  /* ============================================================
+     PROTOTYPE MOCKUP — Center pane wireframe
+     ============================================================ */
+  .prototype-frame {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    margin-bottom: 24px;
+  }
+
+  .proto-browser-bar {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 16px;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .proto-dots {
+    display: flex; gap: 5px;
+  }
+
+  .proto-dots span {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--border-medium);
+  }
+
+  .proto-dots span:nth-child(1) { background: #ef4444aa; }
+  .proto-dots span:nth-child(2) { background: #f59e0baa; }
+  .proto-dots span:nth-child(3) { background: #22c55eaa; }
+
+  .proto-url {
+    flex: 1;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-subtle);
+    border-radius: 5px;
+    padding: 5px 12px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-secondary);
+  }
+
+  .proto-body {
+    padding: 24px;
+    min-height: 420px;
+  }
+
+  /* MeetMeFirst wireframe sections */
+  .mmf-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+  }
+
+  .mmf-logo {
+    font-size: 22px; font-weight: 700;
+    background: var(--gradient-h);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .mmf-nav {
+    display: flex; gap: 20px;
+    font-size: 12px; color: var(--text-secondary);
+    font-family: var(--font-mono);
+  }
+
+  .mmf-nav span:hover { color: var(--text-primary); cursor: pointer; }
+
+  .mmf-hero {
+    text-align: center;
+    padding: 36px 24px;
+    background: linear-gradient(180deg, rgba(139,92,246,.12) 0%, transparent 100%);
+    border-radius: var(--radius-md);
+    margin-bottom: 24px;
+  }
+
+  .mmf-hero h2 {
+    font-size: 26px; font-weight: 700;
+    margin-bottom: 10px;
+    background: var(--gradient-h);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .mmf-hero p {
+    color: var(--text-secondary);
+    font-size: 14px;
+    max-width: 500px;
+    margin: 0 auto 20px;
+    line-height: 1.6;
+  }
+
+  .mmf-cta {
+    display: inline-block;
+    padding: 10px 28px;
+    background: var(--gradient);
+    border-radius: 24px;
+    color: #fff;
+    font-weight: 600;
+    font-size: 13px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform .15s;
+  }
+
+  .mmf-cta:hover { transform: scale(1.03); }
+
+  .mmf-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .mmf-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    transition: border-color .2s;
+  }
+
+  .mmf-card:hover { border-color: var(--border-medium); }
+
+  .mmf-card-icon {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    margin-bottom: 12px;
+  }
+
+  .mmf-card-icon.v { background: rgba(139,92,246,.2); }
+  .mmf-card-icon.b { background: rgba(59,130,246,.2); }
+  .mmf-card-icon.g { background: rgba(34,197,94,.2); }
+
+  .mmf-card h4 {
+    font-size: 13px; font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .mmf-card p {
+    font-size: 11.5px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
+  .mmf-profile-preview {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+  }
+
+  .mmf-avatar {
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    background: var(--gradient);
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; font-weight: 700; color: #fff;
+  }
+
+  .mmf-profile-info { flex: 1; }
+
+  .mmf-profile-info h4 {
+    font-size: 15px; font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  .mmf-profile-info .role {
+    font-size: 12px; color: var(--violet);
+    font-family: var(--font-mono);
+    margin-bottom: 8px;
+  }
+
+  .mmf-profile-info p {
+    font-size: 12px; color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
+  .mmf-ai-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 4px 10px;
+    background: rgba(34,197,94,.15);
+    border: 1px solid rgba(34,197,94,.3);
+    border-radius: 12px;
+    font-size: 10px; font-weight: 600;
+    color: var(--green);
+    font-family: var(--font-mono);
+    margin-top: 8px;
+  }
+
+  .mmf-ai-badge::before {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+
+  /* ============================================================
+     RECURSIVE CONTEXT LAYER — Visual Loop
+     ============================================================ */
+  .rcl-container {
+    margin-top: 8px;
+  }
+
+  .rcl-title {
+    font-size: 18px; font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  .rcl-subtitle {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 24px;
+    line-height: 1.5;
+  }
+
+  .rcl-loop {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+    position: relative;
+  }
+
+  .rcl-loop::after {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: var(--bg-primary);
+    border: 2px solid var(--border-medium);
+    z-index: 2;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238b5cf6' stroke-width='2'%3E%3Cpath d='M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10'/%3E%3Cpath d='M22 12l-4-4 4-4'/%3E%3C/svg%3E");
+    background-size: 24px;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+
+  .rcl-stage {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    position: relative;
+    transition: border-color .2s, transform .2s;
+  }
+
+  .rcl-stage:hover {
+    border-color: var(--border-medium);
+    transform: translateY(-2px);
+  }
+
+  .rcl-stage-num {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+  }
+
+  .rcl-stage h4 {
+    font-size: 15px; font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .rcl-stage .tagline {
+    font-size: 11px;
+    font-family: var(--font-mono);
+    color: var(--violet);
+    margin-bottom: 10px;
+  }
+
+  .rcl-stage p {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.55;
+  }
+
+  .rcl-stage ul {
+    list-style: none; padding: 0; margin: 0;
+  }
+
+  .rcl-stage ul li {
+    font-size: 12px;
+    color: var(--text-secondary);
+    padding: 3px 0;
+    padding-left: 14px;
+    position: relative;
+  }
+
+  .rcl-stage ul li::before {
+    content: '>';
+    position: absolute;
+    left: 0;
+    color: var(--violet);
+    font-family: var(--font-mono);
+    font-size: 11px;
+  }
+
+  /* Experience stage spans full width */
+  .rcl-experience {
+    grid-column: 1 / -1;
+  }
+
+  /* Feedback arrows */
+  .rcl-feedback {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 4px;
+  }
+
+  .rcl-feedback-item {
+    background: rgba(34,197,94,.06);
+    border: 1px dashed rgba(34,197,94,.25);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
+  .rcl-feedback-item .arrow {
+    color: var(--green);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    display: block;
+    margin-bottom: 4px;
+    font-weight: 600;
+  }
+
+  /* ============================================================
+     KNOWLEDGE TREE
+     ============================================================ */
+  .knowledge-tree {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 1.7;
+    color: var(--text-secondary);
+    margin: 20px 0;
+  }
+
+  .knowledge-tree .dir { color: var(--violet); font-weight: 500; }
+  .knowledge-tree .file { color: var(--text-muted); }
+  .knowledge-tree .comment { color: var(--green); font-style: italic; }
+
+  /* ============================================================
+     SKILLCHAIN
+     ============================================================ */
+  .skillchain {
+    display: flex;
+    gap: 0;
+    align-items: stretch;
+    margin: 20px 0;
+    overflow-x: auto;
+    padding-bottom: 8px;
+  }
+
+  .skill-step {
+    flex: 1;
+    min-width: 150px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    position: relative;
+    transition: border-color .2s, transform .2s;
+  }
+
+  .skill-step:hover {
+    border-color: var(--border-medium);
+    transform: translateY(-2px);
+  }
+
+  .skill-step:not(:last-child) { margin-right: 28px; }
+
+  .skill-step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    right: -22px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px; height: 2px;
+    background: var(--gradient-h);
+  }
+
+  .skill-step:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    right: -12px;
+    top: 50%;
+    transform: translateY(-50%) rotate(45deg);
+    width: 7px; height: 7px;
+    border-top: 2px solid var(--green);
+    border-right: 2px solid var(--green);
+  }
+
+  .skill-num {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--violet);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: .8px;
+  }
+
+  .skill-step h5 {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .skill-step p {
+    font-size: 11px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
+  /* ============================================================
+     RIGHT PANEL — Project Info
+     ============================================================ */
+  .panel {
+    width: var(--panel-w);
+    background: var(--bg-secondary);
+    border-left: 1px solid var(--border-subtle);
+    flex-shrink: 0;
+    overflow-y: auto;
+    padding: 20px;
+  }
+
+  .panel-header {
+    font-size: 12px; font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .panel-section {
+    margin-bottom: 20px;
+  }
+
+  .panel-section-title {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .panel-section-title::before {
+    content: '';
+    width: 3px; height: 12px;
+    background: var(--gradient);
+    border-radius: 2px;
+  }
+
+  .panel-text {
+    font-size: 12.5px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  .panel-tags {
+    display: flex; flex-wrap: wrap; gap: 6px;
+  }
+
+  .panel-tag {
+    padding: 3px 10px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 12px;
+    font-size: 11px;
+    color: var(--text-secondary);
+    font-family: var(--font-mono);
+  }
+
+  /* Flow steps */
+  .flow-steps {
+    counter-reset: flow;
+  }
+
+  .flow-step {
+    display: flex; gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(139,92,246,.06);
+    align-items: flex-start;
+  }
+
+  .flow-step:last-child { border-bottom: none; }
+
+  .flow-num {
+    counter-increment: flow;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 600;
+    color: var(--violet);
+    font-family: var(--font-mono);
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .flow-step p {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
+  /* Test status */
+  .test-status {
+    display: flex; flex-direction: column; gap: 8px;
+  }
+
+  .test-item {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+
+  .test-badge {
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: 600;
+    font-family: var(--font-mono);
+  }
+
+  .test-badge.pending  { background: rgba(245,158,11,.15); color: var(--amber); }
+  .test-badge.live     { background: rgba(34,197,94,.15); color: var(--green); }
+  .test-badge.blocked  { background: rgba(239,68,68,.15); color: var(--red); }
+  .test-badge.queued   { background: rgba(139,92,246,.15); color: var(--violet); }
+
+  /* Meta KV */
+  .meta-kv {
+    display: grid; grid-template-columns: auto 1fr; gap: 4px 12px;
+  }
+
+  .meta-key {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+  }
+
+  .meta-val {
+    font-size: 11px;
+    color: var(--text-secondary);
+  }
+
+  /* Challenges list */
+  .challenges {
+    display: flex; flex-direction: column; gap: 6px;
+  }
+
+  .challenge-item {
+    display: flex; align-items: flex-start; gap: 8px;
+    padding: 8px 10px;
+    background: rgba(239,68,68,.06);
+    border: 1px solid rgba(239,68,68,.12);
+    border-radius: var(--radius-sm);
+    font-size: 11.5px;
+    color: var(--text-secondary);
+    line-height: 1.4;
+  }
+
+  .challenge-icon {
+    color: var(--amber);
+    font-size: 13px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  /* ============================================================
+     SIGNAL TAB — Signal & feedback content
+     ============================================================ */
+  .signal-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .signal-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 20px;
+  }
+
+  .signal-card h4 {
+    font-size: 13px; font-weight: 600;
+    margin-bottom: 10px;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .signal-card h4 .badge {
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 8px;
+    font-family: var(--font-mono);
+    font-weight: 500;
+  }
+
+  .signal-metric {
+    display: flex; align-items: baseline; gap: 8px;
+    margin-bottom: 6px;
+  }
+
+  .signal-metric .num {
+    font-size: 28px;
+    font-weight: 700;
+    background: var(--gradient-h);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .signal-metric .unit {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+  }
+
+  .signal-card p {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
+  /* ============================================================
+     RESPONSIVE
+     ============================================================ */
+  @media (max-width: 1100px) {
+    .panel { display: none; }
+  }
+
+  @media (max-width: 800px) {
+    .sidebar { display: none; }
+    .center { padding: 20px 16px; }
+    .mmf-cards { grid-template-columns: 1fr; }
+    .rcl-loop { grid-template-columns: 1fr; }
+    .rcl-loop::after { display: none; }
+    .skillchain { flex-direction: column; }
+    .skill-step:not(:last-child) { margin-right: 0; margin-bottom: 16px; }
+    .skill-step:not(:last-child)::after,
+    .skill-step:not(:last-child)::before { display: none; }
+    .signal-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ========== HEADER ========== -->
+  <header class="header">
+    <div class="header-brand">
+      <div class="logo-icon">gA</div>
+      <h1>gr<span style="-webkit-text-fill-color:transparent">AI</span>ce Labs <span>/ MeetMeFirst</span></h1>
+    </div>
+    <div class="header-meta">
+      <span><span class="status-dot"></span> Active Project</span>
+      <span>v0.1.0-alpha</span>
+      <span>Jun 2026</span>
+    </div>
+  </header>
+
+  <div class="body">
+
+    <!-- ========== LEFT SIDEBAR ========== -->
+    <aside class="sidebar">
+
+      <!-- Version Selector -->
+      <div class="sidebar-section">
+        <div class="sidebar-label">Version</div>
+        <select class="version-selector" id="versionSelect">
+          <option>v0.1.0-alpha (current)</option>
+          <option>v0.0.3-concept</option>
+          <option>v0.0.2-wireframe</option>
+          <option>v0.0.1-idea</option>
+        </select>
+      </div>
+
+      <!-- Navigation -->
+      <div class="sidebar-section">
+        <div class="sidebar-label">Sections</div>
+        <div class="nav-item active" data-tab="prototype">
+          <span class="nav-icon">&#9672;</span> Prototype
+        </div>
+        <div class="nav-item" data-tab="context">
+          <span class="nav-icon">&#8634;</span> Context Layer
+        </div>
+        <div class="nav-item" data-tab="signal">
+          <span class="nav-icon">&#9670;</span> Signal
+        </div>
+        <div class="nav-item" data-tab="settings">
+          <span class="nav-icon">&#9881;</span> Settings
+        </div>
+      </div>
+
+      <!-- Skillchain Progress -->
+      <div class="sidebar-section">
+        <div class="sidebar-label">Skillchain</div>
+        <div class="skillchain-nav">
+          <div class="skill-nav-item">
+            <span class="skill-dot done"></span>
+            <span>Hypothesis Gating</span>
+          </div>
+          <div class="skill-nav-item">
+            <span class="skill-dot active"></span>
+            <span>Build Prototype</span>
+          </div>
+          <div class="skill-nav-item">
+            <span class="skill-dot"></span>
+            <span>Usability Test</span>
+          </div>
+          <div class="skill-nav-item">
+            <span class="skill-dot"></span>
+            <span>Synthesize Feedback</span>
+          </div>
+          <div class="skill-nav-item">
+            <span class="skill-dot"></span>
+            <span>Run V2</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tech Stack -->
+      <div class="sidebar-section">
+        <div class="sidebar-label">Stack</div>
+        <div class="panel-tags" style="padding: 0;">
+          <span class="panel-tag">Python</span>
+          <span class="panel-tag">Claude API</span>
+          <span class="panel-tag">Node.js</span>
+          <span class="panel-tag">Railway</span>
+          <span class="panel-tag">Netlify</span>
+          <span class="panel-tag">Stripe</span>
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- ========== CENTER CONTENT ========== -->
+    <main class="center">
+
+      <!-- Tab Bar -->
+      <div class="tab-bar">
+        <div class="tab active" data-tab="prototype">Prototype</div>
+        <div class="tab" data-tab="context">Context Layer</div>
+        <div class="tab" data-tab="signal">Signal</div>
+        <div class="tab" data-tab="settings">Settings</div>
+      </div>
+
+      <!-- ===== TAB: PROTOTYPE ===== -->
+      <div class="tab-pane active" id="tab-prototype">
+
+        <!-- Browser mockup -->
+        <div class="prototype-frame">
+          <div class="proto-browser-bar">
+            <div class="proto-dots"><span></span><span></span><span></span></div>
+            <div class="proto-url">https://meetmefirst.ai</div>
+          </div>
+          <div class="proto-body">
+
+            <div class="mmf-header">
+              <div class="mmf-logo">MeetMeFirst</div>
+              <div class="mmf-nav">
+                <span>How It Works</span>
+                <span>For Executives</span>
+                <span>Pricing</span>
+                <span>Login</span>
+              </div>
+            </div>
+
+            <div class="mmf-hero">
+              <h2>Your AI Clone Introduces You<br>Before You Walk In</h2>
+              <p>Domain-filtered profiles with AI clone representatives. Let your carefully curated digital presence make the first impression — so every introduction starts on your terms.</p>
+              <a class="mmf-cta">Create Your Clone &rarr;</a>
+            </div>
+
+            <div class="mmf-cards">
+              <div class="mmf-card">
+                <div class="mmf-card-icon v">&#9733;</div>
+                <h4>Executive Branding</h4>
+                <p>Curate a domain-filtered profile that showcases your leadership style, values, and vision. Your AI clone represents you with precision.</p>
+              </div>
+              <div class="mmf-card">
+                <div class="mmf-card-icon b">&#9741;</div>
+                <h4>Smart Filtering</h4>
+                <p>Control who sees what. Different profiles for board introductions, executive dating, school admissions, or household staff vetting.</p>
+              </div>
+              <div class="mmf-card">
+                <div class="mmf-card-icon g">&#10003;</div>
+                <h4>AI Clone Fidelity</h4>
+                <p>Your clone answers questions, shares context, and represents your brand with accuracy calibrated to your preferences and boundaries.</p>
+              </div>
+            </div>
+
+            <div class="mmf-profile-preview">
+              <div class="mmf-avatar">MJ</div>
+              <div class="mmf-profile-info">
+                <h4>Mj Juhanson</h4>
+                <div class="role">Founder & CEO, grAIce AI Studios</div>
+                <p>Faith-informed AI builder creating products at the intersection of technology and purpose. Building tools that amplify human connection through intelligent design.</p>
+                <span class="mmf-ai-badge">AI CLONE ACTIVE</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Skillchain -->
+        <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 6px;">MeetMeFirst Skillchain</h3>
+        <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 16px; line-height: 1.5;">
+          Adapted from LCA's AI-native exploration methodology. Each skill feeds the next, creating a compounding loop of validated product development.
+        </p>
+        <div class="skillchain">
+          <div class="skill-step">
+            <div class="skill-num">Skill #1</div>
+            <h5>Hypothesis Gating</h5>
+            <p>Validate: "Do high-profile individuals need AI-mediated introductions?" Test with 20 exec interviews + competitive analysis.</p>
+          </div>
+          <div class="skill-step">
+            <div class="skill-num">Skill #2</div>
+            <h5>Build Prototype</h5>
+            <p>MVP: Profile creation flow + AI clone setup wizard + domain filter configuration. Python + Claude API on Railway.</p>
+          </div>
+          <div class="skill-step">
+            <div class="skill-num">Skill #3</div>
+            <h5>Usability Test</h5>
+            <p>5 executives create profiles and test clone interactions. Measure fidelity scores, filter accuracy, and first-impression quality.</p>
+          </div>
+          <div class="skill-step">
+            <div class="skill-num">Skill #4</div>
+            <h5>Synthesize Feedback</h5>
+            <p>Aggregate: clone accuracy issues, domain filter edge cases, privacy concerns, and "would you pay" signals into V2 priorities.</p>
+          </div>
+          <div class="skill-step">
+            <div class="skill-num">Skill #5</div>
+            <h5>Ship V2</h5>
+            <p>Refined clone engine, Stripe integration (hybrid pricing), expanded verticals, and polished onboarding. Launch to waitlist.</p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ===== TAB: CONTEXT LAYER ===== -->
+      <div class="tab-pane" id="tab-context">
+
+        <div class="rcl-container">
+          <div class="rcl-title">The Recursive Context Layer</div>
+          <div class="rcl-subtitle">
+            Applied to MeetMeFirst — How context flows through the product lifecycle, creating a self-reinforcing loop where every stage feeds intelligence back into the system. Based on LCA's AI-native exploration framework.
+          </div>
+
+          <div class="rcl-loop">
+
+            <!-- CAPTURE -->
+            <div class="rcl-stage">
+              <div class="rcl-stage-num">Stage 1 &mdash; Routine</div>
+              <h4>&#128229; Capture</h4>
+              <div class="tagline">"Bring in the Context"</div>
+              <ul>
+                <li>Executive interview transcripts from Notion</li>
+                <li>Competitive intel from Gmail &amp; Google Drive</li>
+                <li>User requests &amp; feature asks from Slack</li>
+                <li>Market signals from LinkedIn &amp; industry feeds</li>
+                <li>Clone interaction logs from production</li>
+              </ul>
+            </div>
+
+            <!-- CURATE -->
+            <div class="rcl-stage">
+              <div class="rcl-stage-num">Stage 2 &mdash; Routine</div>
+              <h4>&#128221; Curate</h4>
+              <div class="tagline">"File the Context"</div>
+              <ul>
+                <li><strong>Read it</strong> &mdash; Triage incoming signals daily</li>
+                <li><strong>Clean it</strong> &mdash; Normalize formats, strip noise</li>
+                <li><strong>File it</strong> &mdash; Route to knowledge/ folders</li>
+                <li><strong>Ignore it</strong> &mdash; Discard low-signal data</li>
+                <li><strong>Act on it</strong> &mdash; Flag urgent items for sprint</li>
+              </ul>
+            </div>
+
+            <!-- STORE -->
+            <div class="rcl-stage">
+              <div class="rcl-stage-num">Stage 3 &mdash; Agent-Optimized Brain</div>
+              <h4>&#129504; Store</h4>
+              <div class="tagline">"Make Context Legible"</div>
+              <div class="knowledge-tree" style="margin: 10px 0 0 0; background: transparent; border: none; padding: 0;">
+                <span class="dir">knowledge/</span><br>
+                &nbsp;&nbsp;<span class="dir">frameworks/</span> <span class="comment"># pricing, clone-fidelity scoring</span><br>
+                &nbsp;&nbsp;<span class="dir">sops/</span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="dir">by-function/</span> <span class="comment"># onboarding, clone-training, filtering</span><br>
+                &nbsp;&nbsp;<span class="dir">enablement/</span> <span class="comment"># user guides, exec FAQs</span><br>
+                &nbsp;&nbsp;<span class="dir">decisions/</span> <span class="comment"># ADRs, pivot logs, event stamps</span><br>
+                &nbsp;&nbsp;<span class="file">glossary.md</span> <span class="comment"># domain terms &amp; the legend</span>
+              </div>
+            </div>
+
+            <!-- EXECUTE -->
+            <div class="rcl-stage">
+              <div class="rcl-stage-num">Stage 4 &mdash; People & Agents</div>
+              <h4>&#9889; Execute</h4>
+              <div class="tagline">"Leverage Context"</div>
+              <ul>
+                <li>Direct &amp; set goals for sprint cycles</li>
+                <li>Ideate &amp; prototype with Claude + Cursor</li>
+                <li>Create artifacts: clone engine, filter logic, UI</li>
+                <li>Run skills &amp; tasks via grAIce workflows</li>
+                <li>Review &amp; ship to production on Railway</li>
+              </ul>
+            </div>
+
+            <!-- EXPERIENCE -->
+            <div class="rcl-stage rcl-experience">
+              <div class="rcl-stage-num">Stage 5 &mdash; Value Delivery</div>
+              <h4>&#127775; Experience</h4>
+              <div class="tagline">"Context Becomes Value"</div>
+              <p>Executives create profiles, activate AI clones, and make filtered introductions. Each interaction generates signal: clone accuracy ratings, domain filter effectiveness, introduction outcomes, and willingness-to-pay data. This signal feeds directly back into CAPTURE, closing the loop.</p>
+            </div>
+
+          </div>
+
+          <!-- Feedback loops -->
+          <div class="rcl-feedback">
+            <div class="rcl-feedback-item">
+              <span class="arrow">&#8634; TRACES FROM ALL WORK</span>
+              How clone-training decisions were made. By-products: prompt templates, filter heuristics, scoring rubrics. Insights get added to knowledge/ automatically.
+            </div>
+            <div class="rcl-feedback-item">
+              <span class="arrow">&#8635; SIGNAL FROM THE MARKET</span>
+              Executive NPS scores, clone interaction ratings, referral patterns, vertical-specific demand signals. All routed back into CAPTURE for the next cycle.
+            </div>
+          </div>
+
+          <!-- Company Brain structure -->
+          <h3 style="font-size: 16px; font-weight: 600; margin: 28px 0 10px;">MeetMeFirst Company Brain</h3>
+          <div class="knowledge-tree">
+<span class="dir">meetmefirst/</span>
+<span class="dir">  knowledge/</span>
+<span class="dir">    frameworks/</span>
+<span class="file">      pricing-model.md</span>        <span class="comment"># Hybrid: base + per-clone-interaction</span>
+<span class="file">      clone-fidelity-scoring.md</span> <span class="comment"># How we measure clone accuracy</span>
+<span class="file">      domain-filter-logic.md</span>    <span class="comment"># Rules for profile segmentation</span>
+<span class="dir">    sops/</span>
+<span class="dir">      by-function/</span>
+<span class="file">        exec-onboarding.md</span>      <span class="comment"># White-glove profile creation</span>
+<span class="file">        clone-training.md</span>       <span class="comment"># How to train an AI clone</span>
+<span class="file">        domain-setup.md</span>         <span class="comment"># Configure filtering domains</span>
+<span class="file">        stripe-integration.md</span>   <span class="comment"># Payment links + webhooks</span>
+<span class="dir">    enablement/</span>
+<span class="file">      exec-faq.md</span>             <span class="comment"># Common executive questions</span>
+<span class="file">      privacy-guide.md</span>        <span class="comment"># Data handling for high-profile users</span>
+<span class="dir">    decisions/</span>
+<span class="file">      001-clone-api-choice.md</span>  <span class="comment"># Why Claude over GPT for clones</span>
+<span class="file">      002-vertical-priority.md</span> <span class="comment"># Exec branding first, dating second</span>
+<span class="file">      003-mvp-scope.md</span>        <span class="comment"># What's in V1 vs V2</span>
+<span class="file">    glossary.md</span>               <span class="comment"># Domain terms: clone, filter, profile</span>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- ===== TAB: SIGNAL ===== -->
+      <div class="tab-pane" id="tab-signal">
+
+        <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 6px;">Market Signal Dashboard</h3>
+        <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 20px; line-height: 1.5;">
+          Signals collected from hypothesis gating interviews and early prototype testing. These feed back into the recursive context layer.
+        </p>
+
+        <div class="signal-grid">
+          <div class="signal-card">
+            <h4>Executive Interest <span class="badge" style="background: rgba(34,197,94,.15); color: var(--green);">Strong</span></h4>
+            <div class="signal-metric">
+              <span class="num">84%</span>
+              <span class="unit">would use</span>
+            </div>
+            <p>Of 20 executives interviewed, 17 expressed strong interest in AI-mediated introductions for professional contexts.</p>
+          </div>
+          <div class="signal-card">
+            <h4>Willingness to Pay <span class="badge" style="background: rgba(139,92,246,.15); color: var(--violet);">Validated</span></h4>
+            <div class="signal-metric">
+              <span class="num">$79</span>
+              <span class="unit">/month median</span>
+            </div>
+            <p>Median price point from Van Westendorp analysis. Executives value privacy-first positioning and domain filtering highly.</p>
+          </div>
+          <div class="signal-card">
+            <h4>Clone Fidelity <span class="badge" style="background: rgba(245,158,11,.15); color: var(--amber);">Needs Work</span></h4>
+            <div class="signal-metric">
+              <span class="num">6.2</span>
+              <span class="unit">/10 accuracy</span>
+            </div>
+            <p>Current prototype clone accuracy. Key gaps: tone nuance, boundary setting, and context-appropriate formality levels.</p>
+          </div>
+          <div class="signal-card">
+            <h4>Top Verticals <span class="badge" style="background: rgba(59,130,246,.15); color: var(--blue);">Ranked</span></h4>
+            <div class="signal-metric">
+              <span class="num">4</span>
+              <span class="unit">validated</span>
+            </div>
+            <p>1. Executive career/branding&emsp;2. Household staff vetting&emsp;3. Executive dating&emsp;4. Private school admissions</p>
+          </div>
+        </div>
+
+        <h4 style="font-size: 14px; font-weight: 600; margin: 8px 0 12px;">Key Insights from Interviews</h4>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <div class="rcl-feedback-item" style="border-style: solid; background: var(--bg-card);">
+            <span class="arrow" style="color: var(--violet);">INSIGHT #1</span>
+            "I don't want to be Googled. I want to be <em>introduced</em>." — The #1 sentiment. Executives want curated first impressions, not SEO profiles.
+          </div>
+          <div class="rcl-feedback-item" style="border-style: solid; background: var(--bg-card);">
+            <span class="arrow" style="color: var(--blue);">INSIGHT #2</span>
+            Privacy controls are table stakes, not a feature. Every interviewee expected granular control over who sees what information.
+          </div>
+          <div class="rcl-feedback-item" style="border-style: solid; background: var(--bg-card);">
+            <span class="arrow" style="color: var(--green);">INSIGHT #3</span>
+            The "AI clone" concept resonates strongest when framed as a "digital chief of staff" — someone who handles introductions on your behalf.
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ===== TAB: SETTINGS ===== -->
+      <div class="tab-pane" id="tab-settings">
+
+        <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 6px;">Project Configuration</h3>
+        <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 20px; line-height: 1.5;">
+          Project-level settings for the MeetMeFirst exploration. Managed by grAIce AI Studios.
+        </p>
+
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+
+          <div class="signal-card" style="background: var(--bg-tertiary);">
+            <h4>Deployment</h4>
+            <div class="meta-kv" style="margin-top: 8px;">
+              <span class="meta-key">Frontend</span><span class="meta-val">Netlify (drag & drop)</span>
+              <span class="meta-key">Backend</span><span class="meta-val">Railway (Node.js)</span>
+              <span class="meta-key">AI Engine</span><span class="meta-val">Anthropic Claude API</span>
+              <span class="meta-key">Payments</span><span class="meta-val">Stripe (Payment Links + webhooks)</span>
+              <span class="meta-key">Repo</span><span class="meta-val">GitHub (main = production)</span>
+              <span class="meta-key">Version</span><span class="meta-val">v0.1.0-alpha</span>
+            </div>
+          </div>
+
+          <div class="signal-card" style="background: var(--bg-tertiary);">
+            <h4>Pricing Framework</h4>
+            <p style="margin-top: 6px; font-size: 12px; color: var(--text-secondary); line-height: 1.6;">
+              Following the 5-step Stripe framework:
+            </p>
+            <div class="meta-kv" style="margin-top: 10px;">
+              <span class="meta-key">Value Metric</span><span class="meta-val">Quality introductions made</span>
+              <span class="meta-key">Charge Metric</span><span class="meta-val">Per-clone interaction + monthly base</span>
+              <span class="meta-key">Model</span><span class="meta-val">Hybrid ($49/mo base + $2/interaction)</span>
+              <span class="meta-key">Guardrails</span><span class="meta-val">100 interactions/mo included, soft cap</span>
+              <span class="meta-key">Iteration</span><span class="meta-val">Monthly review of interaction pricing</span>
+            </div>
+          </div>
+
+          <div class="signal-card" style="background: var(--bg-tertiary);">
+            <h4>Build Schedule</h4>
+            <div class="meta-kv" style="margin-top: 8px;">
+              <span class="meta-key">Sessions</span><span class="meta-val">Mon & Thu, 7 PM CT</span>
+              <span class="meta-key">Sabbath</span><span class="meta-val">No deploys on Saturday</span>
+              <span class="meta-key">Sprint</span><span class="meta-val">2-week cycles</span>
+              <span class="meta-key">Tools</span><span class="meta-val">Claude + Cursor + Replit</span>
+            </div>
+          </div>
+
+          <div class="signal-card" style="background: rgba(239,68,68,.06); border-color: rgba(239,68,68,.15);">
+            <h4 style="color: var(--red);">&#9888; Danger Zone</h4>
+            <p style="margin-top: 6px; font-size: 12px; color: var(--text-secondary); line-height: 1.6;">
+              Archive this project, reset prototype data, or transfer ownership. These actions cannot be undone.
+            </p>
+            <div style="display: flex; gap: 10px; margin-top: 12px;">
+              <button style="padding: 6px 14px; border: 1px solid rgba(239,68,68,.3); background: transparent; color: var(--red); border-radius: var(--radius-sm); font-size: 12px; font-family: var(--font-mono); cursor: pointer;">Archive Project</button>
+              <button style="padding: 6px 14px; border: 1px solid rgba(239,68,68,.3); background: transparent; color: var(--red); border-radius: var(--radius-sm); font-size: 12px; font-family: var(--font-mono); cursor: pointer;">Reset Data</button>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </main>
+
+    <!-- ========== RIGHT PANEL ========== -->
+    <aside class="panel">
+
+      <div class="panel-header">Project Info</div>
+
+      <!-- About -->
+      <div class="panel-section">
+        <div class="panel-section-title">About</div>
+        <p class="panel-text">
+          MeetMeFirst is an AI-powered pre-introduction platform for executive personal branding. Domain-filtered profiles with AI clone representatives let high-profile individuals control their first impressions.
+        </p>
+      </div>
+
+      <!-- Who It's For -->
+      <div class="panel-section">
+        <div class="panel-section-title">Who It's For</div>
+        <div class="panel-tags">
+          <span class="panel-tag">C-Suite Execs</span>
+          <span class="panel-tag">Board Members</span>
+          <span class="panel-tag">VCs & Founders</span>
+          <span class="panel-tag">Public Figures</span>
+          <span class="panel-tag">HNW Individuals</span>
+        </div>
+      </div>
+
+      <!-- Scenario -->
+      <div class="panel-section">
+        <div class="panel-section-title">Scenario</div>
+        <p class="panel-text">
+          An executive needs to be introduced at a private dinner, a board event, or a dating context. Instead of a LinkedIn profile or cold intro, their AI clone provides a curated, context-aware introduction filtered for the specific domain.
+        </p>
+      </div>
+
+      <!-- Flow -->
+      <div class="panel-section">
+        <div class="panel-section-title">Flow</div>
+        <div class="flow-steps">
+          <div class="flow-step">
+            <div class="flow-num">1</div>
+            <p>Executive creates a profile on MeetMeFirst</p>
+          </div>
+          <div class="flow-step">
+            <div class="flow-num">2</div>
+            <p>Trains their AI clone with voice, tone, and boundaries</p>
+          </div>
+          <div class="flow-step">
+            <div class="flow-num">3</div>
+            <p>Configures domain filters (career, social, dating, etc.)</p>
+          </div>
+          <div class="flow-step">
+            <div class="flow-num">4</div>
+            <p>Shares a unique introduction link or QR code</p>
+          </div>
+          <div class="flow-step">
+            <div class="flow-num">5</div>
+            <p>Recipient interacts with the AI clone for a curated intro</p>
+          </div>
+          <div class="flow-step">
+            <div class="flow-num">6</div>
+            <p>Executive reviews interaction transcript and decides next step</p>
+          </div>
+          <div class="flow-step">
+            <div class="flow-num">7</div>
+            <p>Mutual interest triggers a warm introduction</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Test -->
+      <div class="panel-section">
+        <div class="panel-section-title">Test Status</div>
+        <div class="test-status">
+          <div class="test-item">
+            <span class="test-badge live">DONE</span>
+            Hypothesis interviews (20/20)
+          </div>
+          <div class="test-item">
+            <span class="test-badge pending">IN PROGRESS</span>
+            Prototype build (60%)
+          </div>
+          <div class="test-item">
+            <span class="test-badge queued">QUEUED</span>
+            Usability testing (0/5)
+          </div>
+          <div class="test-item">
+            <span class="test-badge blocked">BLOCKED</span>
+            Clone fidelity calibration
+          </div>
+        </div>
+      </div>
+
+      <!-- Meta -->
+      <div class="panel-section">
+        <div class="panel-section-title">Meta</div>
+        <div class="meta-kv">
+          <span class="meta-key">Owner</span>
+          <span class="meta-val">Mj (grAIce AI Studios)</span>
+          <span class="meta-key">Created</span>
+          <span class="meta-val">May 2026</span>
+          <span class="meta-key">Updated</span>
+          <span class="meta-val">Jun 23, 2026</span>
+          <span class="meta-key">Status</span>
+          <span class="meta-val" style="color: var(--amber);">In Development</span>
+          <span class="meta-key">Entity</span>
+          <span class="meta-val">grAIce AI Studios (S-Corp, AL)</span>
+          <span class="meta-key">Methodology</span>
+          <span class="meta-val">AI-Native Exploration (LCA)</span>
+        </div>
+      </div>
+
+      <!-- Challenges -->
+      <div class="panel-section">
+        <div class="panel-section-title">Active Challenges</div>
+        <div class="challenges">
+          <div class="challenge-item">
+            <span class="challenge-icon">&#9888;</span>
+            <span>Prototype architecture — choosing between monolith vs. microservices for clone engine</span>
+          </div>
+          <div class="challenge-item">
+            <span class="challenge-icon">&#9888;</span>
+            <span>AI clone fidelity — maintaining tone accuracy across different introduction contexts</span>
+          </div>
+          <div class="challenge-item">
+            <span class="challenge-icon">&#9888;</span>
+            <span>Domain filtering logic — handling edge cases where verticals overlap</span>
+          </div>
+          <div class="challenge-item">
+            <span class="challenge-icon">&#9888;</span>
+            <span>MVP scoping — deciding what's V1 essential vs. V2 nice-to-have</span>
+          </div>
+        </div>
+      </div>
+
+    </aside>
+
+  </div>
+
+</div>
+
+<!-- ============================================================
+     INTERACTIVITY
+     ============================================================ -->
+<script>
+(function() {
+  // Tab switching
+  const tabs = document.querySelectorAll('.tab');
+  const panes = document.querySelectorAll('.tab-pane');
+  const navItems = document.querySelectorAll('.nav-item[data-tab]');
+
+  function switchTab(tabName) {
+    tabs.forEach(t => t.classList.toggle('active', t.dataset.tab === tabName));
+    navItems.forEach(n => n.classList.toggle('active', n.dataset.tab === tabName));
+    panes.forEach(p => p.classList.toggle('active', p.id === 'tab-' + tabName));
+  }
+
+  tabs.forEach(t => t.addEventListener('click', () => switchTab(t.dataset.tab)));
+  navItems.forEach(n => n.addEventListener('click', () => switchTab(n.dataset.tab)));
+
+  // Hover glow effect on cards
+  document.querySelectorAll('.rcl-stage, .skill-step, .signal-card, .mmf-card').forEach(el => {
+    el.addEventListener('mouseenter', function() {
+      this.style.boxShadow = '0 0 20px rgba(139,92,246,.12)';
+    });
+    el.addEventListener('mouseleave', function() {
+      this.style.boxShadow = 'none';
+    });
+  });
+})();
+</script>
+
+</body>
+</html>
